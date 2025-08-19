@@ -1,829 +1,283 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Civil Engineering Professor Job Scraper</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        
-        .header h1 {
-            color: #2c3e50;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        
-        .controls {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .control-row {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-        }
-        
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-        
-        label {
-            font-weight: 600;
-            color: #2c3e50;
-            font-size: 0.9rem;
-        }
-        
-        input, select, button {
-            padding: 10px 15px;
-            border: 2px solid #e1e8ed;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-        
-        input:focus, select:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-        
-        .btn {
-            background: linear-gradient(45deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn:active {
-            transform: translateY(0);
-        }
-        
-        .btn.stop {
-            background: linear-gradient(45deg, #e74c3c, #c0392b);
-        }
-        
-        .status {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .status-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .status-item:last-child {
-            border-bottom: none;
-        }
-        
-        .status-value {
-            font-weight: 600;
-            color: #667eea;
-        }
-        
-        .results {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .tab-buttons {
-            display: flex;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .tab-button {
-            padding: 12px 24px;
-            background: none;
-            border: none;
-            border-bottom: 3px solid transparent;
-            cursor: pointer;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.3s ease;
-        }
-        
-        .tab-button.active {
-            color: #667eea;
-            border-bottom-color: #667eea;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .job-card {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
-            transition: all 0.3s ease;
-        }
-        
-        .job-card:hover {
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
-        
-        .job-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-        
-        .job-details {
-            display: flex;
-            gap: 20px;
-            color: #666;
-            font-size: 0.9rem;
-            flex-wrap: wrap;
-        }
-        
-        .job-description {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            color: #555;
-            line-height: 1.4;
-        }
-        
-        .json-output {
-            background: #2d3748;
-            color: #e2e8f0;
-            border-radius: 8px;
-            padding: 20px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            overflow-x: auto;
-            white-space: pre-wrap;
-            max-height: 500px;
-            overflow-y: auto;
-        }
-        
-        .download-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .log {
-            background: #1a202c;
-            color: #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.8rem;
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 20px;
-        }
-        
-        .github-link {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 10px 15px;
-            border-radius: 25px;
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .github-link:hover {
-            background: #333;
-            color: white;
-            transform: translateY(-2px);
-        }
-        
-        .alert {
-            background: #fff3cd;
-            border: 1px solid #ffeaa7;
-            color: #856404;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .control-row {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .job-details {
-                flex-direction: column;
-                gap: 5px;
-            }
-            
-            .download-buttons {
-                flex-direction: column;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CE Faculty Job Scraper</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script>const DEMO_MODE = false;</script>
 </head>
 <body>
-    <a href="https://github.com/yourusername/civil-engineering-job-scraper" class="github-link">
-        ⭐ Star on GitHub
-    </a>
-
-    <div class="container">
-        <div class="header">
-            <h1>🏗️ Civil Engineering Professor Job Scraper</h1>
-            <p>Automatically collect and monitor professor job postings in Civil Engineering, Construction, and Building Sciences</p>
-        </div>
-        
-        <div class="alert">
-            <strong>⚠️ Demo Mode:</strong> This is a demonstration using mock data. For production use, implement actual web scraping with proper backend services and respect website terms of service.
-        </div>
-        
-        <div class="controls">
-            <div class="control-row">
-                <div class="control-group">
-                    <label for="interval">Update Interval (seconds)</label>
-                    <input type="number" id="interval" value="300" min="60" max="3600">
-                </div>
-                <div class="control-group">
-                    <label for="maxJobs">Max Job Postings</label>
-                    <input type="number" id="maxJobs" value="100" min="10" max="500">
-                </div>
-                <div class="control-group">
-                    <label for="requiredKeywords">Required Keywords (AND)</label>
-                    <input type="text" id="requiredKeywords" placeholder="professor" value="professor">
-                </div>
-                <div class="control-group">
-                    <label for="fieldKeywords">Field Keywords (OR)</label>
-                    <input type="text" id="fieldKeywords" placeholder="civil, construction, building" value="civil, construction, building">
-                </div>
-            </div>
-            <div class="control-row">
-                <button class="btn" id="startBtn" onclick="startScraping()">Start Scraping</button>
-                <button class="btn stop" id="stopBtn" onclick="stopScraping()" disabled>Stop</button>
-                <button class="btn" onclick="manualScrape()">Manual Run</button>
-                <button class="btn" onclick="clearData()">Clear Data</button>
-            </div>
-        </div>
-        
-        <div class="status">
-            <h3>📊 Status Information</h3>
-            <div class="status-item">
-                <span>Scraping Status:</span>
-                <span class="status-value" id="status">Idle</span>
-            </div>
-            <div class="status-item">
-                <span>Last Update:</span>
-                <span class="status-value" id="lastUpdate">-</span>
-            </div>
-            <div class="status-item">
-                <span>Total Job Postings:</span>
-                <span class="status-value" id="jobCount">0</span>
-            </div>
-            <div class="status-item">
-                <span>Next Update In:</span>
-                <span class="status-value" id="nextUpdate">-</span>
-            </div>
-        </div>
-        
-        <div class="results">
-            <div class="tab-buttons">
-                <button class="tab-button active" onclick="showTab('jobs')">Job Listings</button>
-                <button class="tab-button" onclick="showTab('json')">JSON Data</button>
-                <button class="tab-button" onclick="showTab('html')">HTML Output</button>
-            </div>
-            
-            <div class="download-buttons">
-                <button class="btn" onclick="downloadJSON()">📄 Download JSON</button>
-                <button class="btn" onclick="downloadHTML()">🌐 Download HTML</button>
-                <button class="btn" onclick="downloadCSV()">📊 Download CSV</button>
-            </div>
-            
-            <div id="jobs" class="tab-content active">
-                <div id="jobsList">
-                    <p style="text-align: center; color: #666; padding: 40px;">
-                        Start scraping to collect job postings
-                    </p>
-                </div>
-            </div>
-            
-            <div id="json" class="tab-content">
-                <div id="jsonOutput" class="json-output">
-                    JSON data will be displayed here...
-                </div>
-            </div>
-            
-            <div id="html" class="tab-content">
-                <div id="htmlOutput" class="json-output">
-                    HTML output will be displayed here...
-                </div>
-            </div>
-            
-            <div class="log" id="log">
-                <div>[System] Job scraper initialized and ready.</div>
-            </div>
-        </div>
+  <header class="topbar">
+    <h1>CE Faculty Job Scraper</h1>
+    <div class="actions">
+      <button id="startBtn" class="btn primary">Start</button>
+      <button id="stopBtn" class="btn" disabled>Stop</button>
+      <button id="manualBtn" class="btn">Run Once</button>
+      <button id="clearBtn" class="btn danger outline">Clear</button>
     </div>
+  </header>
 
-    <script>
-        let scrapingInterval;
-        let countdownInterval;
-        let jobsData = [];
-        let isRunning = false;
+  <main class="container">
+    <section class="panel">
+      <form id="controls" class="grid">
+        <label>
+          <span>Interval (s)</span>
+          <input type="number" id="interval" value="300" min="60" max="3600" />
+        </label>
+        <label>
+          <span>Max Jobs</span>
+          <input type="number" id="maxJobs" value="100" min="10" max="500" />
+        </label>
+        <label class="wide">
+          <span>Required (AND)</span>
+          <input type="text" id="requiredKeywords" value="professor" placeholder="professor, assistant professor" />
+        </label>
+        <label class="wide">
+          <span>Fields (OR)</span>
+          <input type="text" id="fieldKeywords" value="civil, construction, building" placeholder="civil, construction, structural..." />
+        </label>
+      </form>
+      <div class="statusbar">
+        <div><strong>Status</strong> <span id="status">Idle</span></div>
+        <div><strong>Last</strong> <span id="lastUpdate">-</span></div>
+        <div><strong>Total</strong> <span id="jobCount">0</span></div>
+        <div><strong>Next</strong> <span id="nextUpdate">-</span></div>
+      </div>
+    </section>
 
-        // Generate mock data for Civil Engineering, Construction, and Building Sciences
-        function generateMockJobs(count) {
-            const titles = [
-                'Assistant Professor of Civil Engineering',
-                'Associate Professor of Construction Management',
-                'Professor of Structural Engineering',
-                'Assistant Professor of Building Sciences',
-                'Associate Professor of Civil and Environmental Engineering',
-                'Professor of Construction Engineering',
-                'Assistant Professor of Building Information Modeling',
-                'Professor of Infrastructure Engineering',
-                'Associate Professor of Sustainable Construction',
-                'Assistant Professor of Building Systems Engineering',
-                'Professor of Geotechnical Engineering',
-                'Associate Professor of Construction Materials',
-                'Assistant Professor of Smart Buildings',
-                'Professor of Transportation Engineering',
-                'Associate Professor of Building Energy Systems',
-                'Assistant Professor of Earthquake Engineering',
-                'Professor of Water Resources Engineering',
-                'Associate Professor of Construction Safety',
-                'Assistant Professor of Green Building Design',
-                'Professor of Concrete Technology'
-            ];
-            
-            const institutions = [
-                'MIT - Department of Civil Engineering',
-                'Stanford University - Civil & Environmental Engineering',
-                'UC Berkeley - Civil Engineering',
-                'Georgia Tech - Building Construction',
-                'University of Illinois - Civil Engineering',
-                'Carnegie Mellon - Civil & Environmental Engineering',
-                'University of Texas - Construction Engineering',
-                'Virginia Tech - Building Construction',
-                'Purdue University - Construction Engineering',
-                'North Carolina State - Construction Management',
-                'University of Michigan - Civil Engineering',
-                'Cornell University - Civil Engineering',
-                'Northwestern University - Civil Engineering',
-                'University of Washington - Construction Management',
-                'Texas A&M - Civil Engineering'
-            ];
-            
-            const locations = [
-                'Cambridge, MA',
-                'Palo Alto, CA', 
-                'Berkeley, CA',
-                'Atlanta, GA',
-                'Urbana, IL',
-                'Pittsburgh, PA',
-                'Austin, TX',
-                'Blacksburg, VA',
-                'West Lafayette, IN',
-                'Raleigh, NC',
-                'Ann Arbor, MI',
-                'Ithaca, NY',
-                'Evanston, IL',
-                'Seattle, WA',
-                'College Station, TX'
-            ];
-            
-            const specializations = [
-                'Structural Engineering',
-                'Construction Management', 
-                'Building Information Modeling (BIM)',
-                'Sustainable Construction',
-                'Smart Buildings',
-                'Infrastructure Systems',
-                'Construction Materials',
-                'Building Energy Systems',
-                'Geotechnical Engineering',
-                'Transportation Engineering',
-                'Water Resources',
-                'Earthquake Engineering',
-                'Construction Safety',
-                'Green Building Design',
-                'Concrete Technology'
-            ];
-            
-            const ranks = ['Assistant Professor', 'Associate Professor', 'Full Professor', 'Lecturer', 'Clinical Professor'];
-            
-            const jobs = [];
-            for (let i = 0; i < count; i++) {
-                const title = titles[Math.floor(Math.random() * titles.length)];
-                const specialization = specializations[Math.floor(Math.random() * specializations.length)];
-                const rank = ranks[Math.floor(Math.random() * ranks.length)];
-                
-                jobs.push({
-                    id: `job_${Date.now()}_${i}`,
-                    title: title,
-                    institution: institutions[Math.floor(Math.random() * institutions.length)],
-                    location: locations[Math.floor(Math.random() * locations.length)],
-                    rank: rank,
-                    type: Math.random() > 0.2 ? 'Full-time' : 'Part-time',
-                    remote: Math.random() > 0.8 ? 'Hybrid Available' : 'On-site',
-                    specialization: specialization,
-                    postedDate: new Date(Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    deadline: new Date(Date.now() + Math.random() * 90 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                    salary: Math.random() > 0.3 ? `$${Math.floor(Math.random() * 50000 + 70000).toLocaleString()}/year` : 'Competitive',
-                    description: `Seeking excellent candidates with strong background in ${specialization.toLowerCase()}. The successful candidate will contribute to teaching and research in civil engineering, construction management, or building sciences.`,
-                    requirements: [
-                        'PhD in Civil Engineering, Construction, or related field',
-                        `Strong research background in ${specialization.toLowerCase()}`,
-                        'Teaching experience preferred',
-                        'Publication record in peer-reviewed journals',
-                        'Professional engineering experience is a plus'
-                    ],
-                    url: `https://higheredjobs.com/job/${Math.floor(Math.random() * 100000)}`,
-                    scrapedAt: new Date().toISOString()
-                });
-            }
-            return jobs;
+    <section class="panel">
+      <nav class="tabs" role="tablist">
+        <button class="tab active" data-tab="jobs">Jobs</button>
+        <button class="tab" data-tab="json">JSON</button>
+        <button class="tab" data-tab="html">HTML</button>
+      </nav>
+
+      <div class="toolbar">
+        <button id="dlJson" class="btn small">Download JSON</button>
+        <button id="dlHtml" class="btn small">Download HTML</button>
+        <button id="dlCsv"  class="btn small">Download CSV</button>
+      </div>
+
+      <section id="tab-jobs" class="tabpane active">
+        <div id="jobsList" class="list empty">Click Start to collect jobs.</div>
+      </section>
+      <section id="tab-json" class="tabpane">
+        <pre id="jsonOutput" class="code">JSON will appear here…</pre>
+      </section>
+      <section id="tab-html" class="tabpane">
+        <pre id="htmlOutput" class="code">HTML will appear here…</pre>
+      </section>
+
+      <details class="logwrap">
+        <summary>Log</summary>
+        <div id="log" class="log">[System] Ready.</div>
+      </details>
+    </section>
+  </main>
+
+  <script>
+    let scrapingInterval, countdownInterval;
+    let jobsData = [];
+    let isRunning = false;
+
+    function generateMockJobs(count) {
+      const titles = ['Assistant Professor of Civil Engineering','Associate Professor of Construction Management','Professor of Structural Engineering'];
+      const institutions = ['MIT - CEE','Stanford - CEE','UC Berkeley - CE','CMU - CEE'];
+      const locations = ['Cambridge, MA','Stanford, CA','Berkeley, CA','Pittsburgh, PA'];
+      const ranks = ['Assistant Professor','Associate Professor','Full Professor'];
+      const specializations = ['Structural','Construction Mgmt','BIM','Geotech','Transportation'];
+      const jobs=[];
+      for (let i=0;i<count;i++){
+        jobs.push({
+          id: `job_${Date.now()}_${i}`,
+          title: titles[Math.floor(Math.random()*titles.length)],
+          institution: institutions[Math.floor(Math.random()*institutions.length)],
+          location: locations[Math.floor(Math.random()*locations.length)],
+          rank: ranks[Math.floor(Math.random()*ranks.length)],
+          type: Math.random()>0.2?'Full-time':'Part-time',
+          remote: Math.random()>0.8?'Hybrid':'On-site',
+          specialization: specializations[Math.floor(Math.random()*specializations.length)],
+          postedDate: new Date().toISOString().slice(0,10),
+          deadline: new Date(Date.now()+30*864e5).toISOString().slice(0,10),
+          salary: 'Competitive',
+          description: 'Faculty position. Teaching and research expected.',
+          url: 'https://www.higheredjobs.com/'
+        });
+      }
+      return jobs;
+    }
+
+    function qs(sel){ return document.querySelector(sel); }
+    function qsa(sel){ return Array.from(document.querySelectorAll(sel)); }
+
+    function log(msg){
+      const time = new Date().toLocaleTimeString();
+      const el = qs('#log');
+      el.innerHTML += `\n[${time}] ${msg}`;
+      el.scrollTop = el.scrollHeight;
+    }
+
+    async function scrapeJobs(){
+      log('Starting job scraping…');
+      try{
+        const maxJobs = parseInt(qs('#maxJobs').value);
+        const req = qs('#requiredKeywords').value.trim();
+        const fld = qs('#fieldKeywords').value.trim();
+
+        let newJobs = [];
+        if (DEMO_MODE){
+          newJobs = generateMockJobs(Math.floor(Math.random()*6)+4);
+        } else {
+          const params = new URLSearchParams({ required: req, fields: fld });
+          const res = await fetch(`/api/scrape?${params.toString()}`);
+          if(!res.ok) throw new Error(`API ${res.status}`);
+          const data = await res.json();
+          newJobs = data.jobs || [];
         }
 
-        function log(message) {
-            const logDiv = document.getElementById('log');
-            const time = new Date().toLocaleTimeString();
-            logDiv.innerHTML += `<div>[${time}] ${message}</div>`;
-            logDiv.scrollTop = logDiv.scrollHeight;
-        }
+        const existing = new Set(jobsData.map(j=>j.id||`${j.title}|${j.url}`));
+        const uniq = newJobs.filter(j=>!existing.has(j.id||`${j.title}|${j.url}`));
+        jobsData = [...jobsData, ...uniq].slice(-maxJobs);
 
-        async function scrapeJobs() {
-            log('Starting job scraping...');
-            
-            try {
-                const maxJobs = parseInt(document.getElementById('maxJobs').value);
-                const requiredKeywords = document.getElementById('requiredKeywords').value.toLowerCase().trim();
-                const fieldKeywords = document.getElementById('fieldKeywords').value.toLowerCase().trim();
-                
-                // Generate mock data (in production, this would be actual web scraping)
-                let newJobs = generateMockJobs(Math.floor(Math.random() * 15) + 5);
-                
-                // Advanced keyword filtering
-                if (requiredKeywords || fieldKeywords) {
-                    newJobs = newJobs.filter(job => {
-                        const jobText = (job.title + ' ' + job.description + ' ' + job.specialization).toLowerCase();
-                        
-                        // Required keywords check (AND condition)
-                        let meetsRequired = true;
-                        if (requiredKeywords) {
-                            const requiredList = requiredKeywords.split(',').map(k => k.trim()).filter(k => k);
-                            meetsRequired = requiredList.every(keyword => jobText.includes(keyword));
-                        }
-                        
-                        // Field keywords check (OR condition)  
-                        let meetsField = true;
-                        if (fieldKeywords) {
-                            const fieldList = fieldKeywords.split(',').map(k => k.trim()).filter(k => k);
-                            meetsField = fieldList.some(keyword => jobText.includes(keyword));
-                        }
-                        
-                        return meetsRequired && meetsField;
-                    });
-                }
-                
-                // Merge with existing data (remove duplicates)
-                const existingIds = new Set(jobsData.map(job => job.id));
-                const uniqueNewJobs = newJobs.filter(job => !existingIds.has(job.id));
-                
-                jobsData = [...jobsData, ...uniqueNewJobs];
-                
-                // Limit to max jobs
-                if (jobsData.length > maxJobs) {
-                    jobsData = jobsData.slice(-maxJobs);
-                }
-                
-                updateDisplay();
-                log(`Collected ${uniqueNewJobs.length} new job postings. Total: ${jobsData.length}`);
-                
-                // Update status
-                document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
-                document.getElementById('jobCount').textContent = jobsData.length;
-                
-            } catch (error) {
-                log(`Scraping error: ${error.message}`);
-            }
-        }
+        updateDisplay();
+        qs('#lastUpdate').textContent = new Date().toLocaleString();
+        qs('#jobCount').textContent = String(jobsData.length);
+        log(`Collected ${uniq.length}. Total ${jobsData.length}.`);
+      }catch(e){
+        log(`Error: ${e.message}`);
+      }
+    }
 
-        function updateDisplay() {
-            updateJobsList();
-            updateJSONOutput();
-            updateHTMLOutput();
-        }
-
-        function updateJobsList() {
-            const jobsList = document.getElementById('jobsList');
-            if (jobsData.length === 0) {
-                jobsList.innerHTML = '<p style="text-align: center; color: #666; padding: 40px;">No job postings collected yet</p>';
-                return;
-            }
-            
-            const jobsHTML = jobsData.map(job => `
-                <div class="job-card">
-                    <div class="job-title">${job.title}</div>
-                    <div class="job-details">
-                        <span>🏛️ ${job.institution}</span>
-                        <span>📍 ${job.location}</span>
-                        <span>👨‍🏫 ${job.rank}</span>
-                        <span>💼 ${job.type}</span>
-                        <span>🌐 ${job.remote}</span>
-                        <span>🔬 ${job.specialization}</span>
-                        <span>💰 ${job.salary}</span>
-                        <span>📅 Posted: ${job.postedDate}</span>
-                        <span>⏰ Deadline: ${job.deadline}</span>
-                    </div>
-                    <div class="job-description">
-                        ${job.description}
-                    </div>
-                </div>
-            `).join('');
-            
-            jobsList.innerHTML = jobsHTML;
-        }
-
-        function updateJSONOutput() {
-            const jsonOutput = document.getElementById('jsonOutput');
-            jsonOutput.textContent = JSON.stringify({
-                lastUpdated: new Date().toISOString(),
-                totalJobs: jobsData.length,
-                searchCriteria: {
-                    requiredKeywords: document.getElementById('requiredKeywords').value,
-                    fieldKeywords: document.getElementById('fieldKeywords').value
-                },
-                jobs: jobsData
-            }, null, 2);
-        }
-
-        function updateHTMLOutput() {
-            const htmlOutput = document.getElementById('htmlOutput');
-            const htmlContent = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Civil Engineering Professor Jobs - ${new Date().toLocaleDateString()}</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; line-height: 1.6; }
-        .header { background: #f4f4f4; padding: 20px; border-radius: 5px; margin-bottom: 20px; }
-        .job { border: 1px solid #ddd; margin: 15px 0; padding: 20px; border-radius: 5px; }
-        .title { font-size: 1.3em; font-weight: bold; color: #2c3e50; margin-bottom: 10px; }
-        .details { color: #666; margin-bottom: 10px; }
-        .description { margin-top: 10px; }
-        .meta { font-size: 0.9em; color: #888; }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>🏗️ Civil Engineering Professor Job Postings</h1>
-        <p><strong>Total Jobs:</strong> ${jobsData.length} | <strong>Last Updated:</strong> ${new Date().toLocaleString()}</p>
-    </div>
-    ${jobsData.map(job => `
-        <div class="job">
-            <div class="title">${job.title}</div>
-            <div class="details">
-                <strong>Institution:</strong> ${job.institution}<br>
-                <strong>Location:</strong> ${job.location}<br>
-                <strong>Rank:</strong> ${job.rank} | <strong>Type:</strong> ${job.type} | <strong>Remote:</strong> ${job.remote}<br>
-                <strong>Specialization:</strong> ${job.specialization}<br>
-                <strong>Salary:</strong> ${job.salary}
-            </div>
-            <div class="description">
-                <strong>Description:</strong> ${job.description}
-            </div>
+    function updateDisplay(){
+      const list = qs('#jobsList');
+      if(jobsData.length===0){ list.className='list empty'; list.textContent='No jobs.'; }
+      else{
+        list.className='list';
+        list.innerHTML = jobsData.map(j=>`
+          <article class="card">
+            <header class="card-title">${j.title}</header>
             <div class="meta">
-                Posted: ${job.postedDate} | Deadline: ${job.deadline} | <a href="${job.url}" target="_blank">View Original</a>
+              <span>${j.institution||''}</span>
+              <span>${j.location||''}</span>
+              <span>${j.rank||''}</span>
+              <span>${j.type||''}</span>
+              <span>${j.remote||''}</span>
+              <span>${j.specialization||''}</span>
             </div>
-        </div>
-    `).join('')}
-</body>
-</html>`;
-            htmlOutput.textContent = htmlContent;
-        }
+            ${j.description?`<p class="desc">${j.description}</p>`:''}
+            <footer class="foot">
+              <span>Posted ${j.postedDate||'-'}</span>
+              <span>Deadline ${j.deadline||'-'}</span>
+              <a href="${j.url}" target="_blank" rel="noopener">Open</a>
+            </footer>
+          </article>
+        `).join('');
+      }
 
-        function startScraping() {
-            if (isRunning) return;
-            
-            isRunning = true;
-            document.getElementById('startBtn').disabled = true;
-            document.getElementById('stopBtn').disabled = false;
-            document.getElementById('status').textContent = 'Running';
-            
-            const interval = parseInt(document.getElementById('interval').value) * 1000;
-            
-            // Run immediately once
-            scrapeJobs();
-            
-            // Set periodic execution
-            scrapingInterval = setInterval(scrapeJobs, interval);
-            
-            // Start countdown
-            startCountdown();
-            
-            log('Started automatic scraping.');
-        }
+      qs('#jsonOutput').textContent = JSON.stringify({
+        lastUpdated: new Date().toISOString(),
+        total: jobsData.length,
+        criteria: { required: qs('#requiredKeywords').value, fields: qs('#fieldKeywords').value },
+        jobs: jobsData
+      }, null, 2);
 
-        function stopScraping() {
-            if (!isRunning) return;
-            
-            isRunning = false;
-            document.getElementById('startBtn').disabled = false;
-            document.getElementById('stopBtn').disabled = true;
-            document.getElementById('status').textContent = 'Stopped';
-            document.getElementById('nextUpdate').textContent = '-';
-            
-            if (scrapingInterval) {
-                clearInterval(scrapingInterval);
-            }
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-            }
-            
-            log('Stopped automatic scraping.');
-        }
+      qs('#htmlOutput').textContent = `<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>CE Jobs</title></head><body>
+<h1>CE Faculty Jobs</h1>
+<p>Total ${jobsData.length} — ${new Date().toLocaleString()}</p>
+${jobsData.map(j=>`
+<section>
+  <h2>${j.title}</h2>
+  <div><strong>${j.institution||''}</strong> — ${j.location||''}</div>
+  <div>${j.rank||''} · ${j.type||''} · ${j.remote||''} · ${j.specialization||''}</div>
+  ${j.description?`<p>${j.description}</p>`:''}
+  <small>Posted ${j.postedDate||'-'} • Deadline ${j.deadline||'-'} • <a href="${j.url}" target="_blank">Source</a></small>
+</section>
+`).join('')}
+</body></html>`;
+    }
 
-        function startCountdown() {
-            const interval = parseInt(document.getElementById('interval').value);
-            let remaining = interval;
-            
-            countdownInterval = setInterval(() => {
-                if (!isRunning) return;
-                
-                remaining--;
-                if (remaining <= 0) {
-                    remaining = interval;
-                }
-                
-                const minutes = Math.floor(remaining / 60);
-                const seconds = remaining % 60;
-                document.getElementById('nextUpdate').textContent = 
-                    `${minutes}:${seconds.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
+    function startScraping(){
+      if(isRunning) return;
+      isRunning = true;
+      qs('#startBtn').disabled = true;
+      qs('#stopBtn').disabled = false;
+      qs('#status').textContent = 'Running';
 
-        function manualScrape() {
-            log('Running manual scrape...');
-            scrapeJobs();
-        }
+      const ms = parseInt(qs('#interval').value)*1000;
+      scrapeJobs();
+      scrapingInterval = setInterval(scrapeJobs, ms);
+      startCountdown();
+      log('Auto scraping started.');
+    }
 
-        function clearData() {
-            if (confirm('Are you sure you want to clear all collected data?')) {
-                jobsData = [];
-                updateDisplay();
-                document.getElementById('jobCount').textContent = '0';
-                log('All data cleared.');
-            }
-        }
+    function stopScraping(){
+      if(!isRunning) return;
+      isRunning = false;
+      qs('#startBtn').disabled = false;
+      qs('#stopBtn').disabled = true;
+      qs('#status').textContent = 'Stopped';
+      qs('#nextUpdate').textContent = '-';
+      clearInterval(scrapingInterval);
+      clearInterval(countdownInterval);
+      log('Auto scraping stopped.');
+    }
 
-        function showTab(tabName) {
-            // Deactivate all tabs
-            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            // Activate selected tab
-            event.target.classList.add('active');
-            document.getElementById(tabName).classList.add('active');
-        }
+    function startCountdown(){
+      const sec = parseInt(qs('#interval').value);
+      let remain = sec;
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(()=>{
+        if(!isRunning) return;
+        remain = (remain<=1)?sec:remain-1;
+        const m = Math.floor(remain/60);
+        const s = String(remain%60).padStart(2,'0');
+        qs('#nextUpdate').textContent = `${m}:${s}`;
+      }, 1000);
+    }
 
-        function downloadJSON() {
-            const data = {
-                lastUpdated: new Date().toISOString(),
-                totalJobs: jobsData.length,
-                searchCriteria: {
-                    requiredKeywords: document.getElementById('requiredKeywords').value,
-                    fieldKeywords: document.getElementById('fieldKeywords').value
-                },
-                jobs: jobsData
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `civil_engineering_jobs_${new Date().toISOString().split('T')[0]}.json`;
-            a.click();
-            URL.revokeObjectURL(url);
-            log('JSON file downloaded.');
-        }
+    function downloadJSON(){
+      const blob = new Blob([qs('#jsonOutput').textContent], {type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download=`ce_jobs_${new Date().toISOString().slice(0,10)}.json`; a.click();
+      URL.revokeObjectURL(url);
+    }
+    function downloadHTML(){
+      const blob = new Blob([qs('#htmlOutput').textContent], {type:'text/html'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download=`ce_jobs_${new Date().toISOString().slice(0,10)}.html`; a.click();
+      URL.revokeObjectURL(url);
+    }
+    function downloadCSV(){
+      if(jobsData.length===0){ alert('No data.'); return; }
+      const headers = ['Title','Institution','Location','Rank','Type','Remote','Specialization','Posted','Deadline','URL'];
+      const rows = jobsData.map(j=>[j.title,j.institution,j.location,j.rank,j.type,j.remote,j.specialization,j.postedDate,j.deadline,j.url].map(v=>`"${(v??'').toString().replaceAll('"','""')}"`).join(','));
+      const csv = [headers.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href=url; a.download=`ce_jobs_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+      URL.revokeObjectURL(url);
+    }
 
-        function downloadHTML() {
-            const htmlContent = document.getElementById('htmlOutput').textContent;
-            const blob = new Blob([htmlContent], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `civil_engineering_jobs_${new Date().toISOString().split('T')[0]}.html`;
-            a.click();
-            URL.revokeObjectURL(url);
-            log('HTML file downloaded.');
-        }
+    window.addEventListener('DOMContentLoaded', ()=>{
+      qs('#startBtn').addEventListener('click', startScraping);
+      qs('#stopBtn').addEventListener('click', stopScraping);
+      qs('#manualBtn').addEventListener('click', ()=>{ log('Manual run.'); scrapeJobs(); });
+      qs('#clearBtn').addEventListener('click', ()=>{ jobsData=[]; updateDisplay(); qs('#jobCount').textContent='0'; log('Cleared.'); });
 
-                function downloadCSV() {
-            if (jobsData.length === 0) {
-                alert('No data to download.');
-                return;
-            }
-            
-            const headers = ['Title', 'Institution', 'Location', 'Rank', 'Type', 'Remote', 'Specialization', 'Salary', 'Posted Date', 'Deadline', 'URL'];
-            const csvContent = [
-                headers.join(','),
-                ...jobsData.map(job => [
-                    `"${job.title}"`,
-                    `"${job.institution}"`,
-                    `"${job.location}"`,
-                    `"${job.rank}"`,
-                    `"${job.type}"`,
-                    `"${job.remote}"`,
-                    `"${job.specialization}"`,
-                    `"${job.salary}"`,
-                    job.postedDate,
-                    job.deadline,
-                    job.url
-                ].join(','))
-            ].join('\n');
-            
-            const blob = new Blob([csvContent], { type: 'text/csv' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `civil_engineering_jobs_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            URL.revokeObjectURL(url);
-            log('CSV file downloaded.');
-        }
-    </script>
+      document.querySelectorAll('.tab').forEach(btn=>btn.addEventListener('click', (e)=>{
+        document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tabpane').forEach(p=>p.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        const id = e.currentTarget.dataset.tab;
+        document.querySelector(`#tab-${id}`).classList.add('active');
+      }));
+
+      qs('#dlJson').addEventListener('click', downloadJSON);
+      qs('#dlHtml').addEventListener('click', downloadHTML);
+      qs('#dlCsv').addEventListener('click', downloadCSV);
+    });
+  </script>
 </body>
 </html>
