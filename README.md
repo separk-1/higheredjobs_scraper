@@ -2,6 +2,17 @@
 
 This project provides a simple web-based interface and backend service for scraping job postings from [HigherEdJobs](https://www.higheredjobs.com/). It allows users to filter academic job postings by keywords and categories, and view them in multiple formats.
 
+## Live Demo
+
+A hosted web interface is also available:  
+👉 https://job-scraper-psi.vercel.app/
+
+It provides the same frontend experience without local setup.
+
+### Demo Screenshot
+
+![Web Demo](images/image.png)
+
 ## Features
 
 - **Backend (Flask + Requests/BeautifulSoup)**
@@ -55,4 +66,3 @@ This project provides a simple web-based interface and backend service for scrap
 - HigherEdJobs may change their HTML structure at any time, so CSS selectors may need updates.
 - This tool is intended for personal/research use. Respect the website's terms of service.
 - Default query is automatically applied if no input is provided, but users can override via the form.
-
