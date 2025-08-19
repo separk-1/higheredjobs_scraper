@@ -66,3 +66,12 @@ It provides the same frontend experience without local setup.
 - HigherEdJobs may change their HTML structure at any time, so CSS selectors may need updates.
 - This tool is intended for personal/research use. Respect the website's terms of service.
 - Default query is automatically applied if no input is provided, but users can override via the form.
+
+
+
+## Playwright Setup
+```bash
+pip install playwright bs4 flask
+python -m playwright install chromium
+python app.py
+```

@@ -69,7 +69,7 @@
         <pre id="htmlOutput" class="code">HTML will appear here…</pre>
       </section>
 
-      <details class="logwrap">
+      <details class="logwrap" open>
         <summary>Log</summary>
         <div id="log" class="log">[System] Ready.</div>
       </details>
@@ -139,6 +139,12 @@
         const existing = new Set(jobsData.map(j=>j.id||`${j.title}|${j.url}`));
         const uniq = newJobs.filter(j=>!existing.has(j.id||`${j.title}|${j.url}`));
         jobsData = [...jobsData, ...uniq].slice(-maxJobs);
+
+        if (uniq.length) {
+          uniq.forEach(j => log(`+ ${j.title || '(no title)'}`));
+        } else {
+          log('No new jobs this run.');
+        }
 
         updateDisplay();
         qs('#lastUpdate').textContent = new Date().toLocaleString();
